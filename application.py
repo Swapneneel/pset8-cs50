@@ -2,18 +2,26 @@ import os
 import re
 from flask import Flask, jsonify, render_template, request
 
-from cs50 import SQL
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+
 from helpers import lookup
 
 # Configure application
 app = Flask(__name__)
 
-# Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///mashup.db")
 
 # Ensure that the API_KEY is set
 if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
+if not os.environ.get("DB_KA_URL"):
+    raise RuntimeError("DATABASE Not found")
+
+
+# Using postgresql
+# We can use the db.execute command as we did arly with sql
+engine = create_engine(os.getenv("DATABASE_URL"))
+db = scoped_session(sessionmaker(bind=engine))
 
 
 # Ensure responses aren't cached
@@ -149,3 +157,7 @@ def update():
 
     # Output places as JSON
     return jsonify(rows)
+
+
+if __name__ ="__main__":
+    app.run()
